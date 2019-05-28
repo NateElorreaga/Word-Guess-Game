@@ -1,47 +1,77 @@
-//create an array of songs(fill this in with songs - maybe use const instead of var?)
-var songArray = ['dog', 'cat', 'horse', 'lion', 'whale','pelican', 'giraffe', 'orangutan', 'hippopotamus', 'rhinoceros'];
-var wins = 0;
-var guessesLeft= 15;
-var guessedLetters = [];
-var currentWord = "";
+//global variables
+const words = ['fat', 'lazy', 'hungry'];
+const allowableLetters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+let wins = 0;
+let guessesRemaining = 10;
+let currentWord = "";
+let underScore = [];
+let rightWord = [];
+let wrongWord = [];
 
-//initiate game function
-/*function startGame(){
-    assignCurrentWord();
-    setEventListener();
-    updateDOM();
+
+//DOM manipulation
+let docUnderScore = document.getElementsByClassName('underscores');
+let docWinTracker = document.getElementsByClassName('wins-count');
+let docWrongGuess = document.getElementsByClassName('wrongGuess');
+let docRemainingGuess = document.getElementsByClassName('remainingGuess');
+
+function startGame(){
+    assignCurrentWord(words);
+    setEventListeners();
+    checkIfUserLost();
 }
-startGame();*/
+startGame();
 
-//choose a word from the array randomly
 function assignCurrentWord(array) {
-    var randomIndex = Math.floor(Math.random() * (array.length));
-    currentWord = (array[randomIndex]);
-    return currentWord;
-}  
+    const index = Math.floor(Math.random() * ((array.length -1) - 0 + 1)) + 0;
+    currentWord = array[index]
+  };
 
-assignCurrentWord(songArray);
-console.log(currentWord);
-
-//event listener (onkeyup) to record each guess from user 
-function setEventListener(){
-    document.onkeyup = function(i){
-        guessedLetters.push(i.key);
+//create underscore length based on randomly selected word
+function generateUnderScore(){
+    for(var i=0; i< currentWord.length; i++){
+        underScore.push('_');
     }
-}
-console.log(guessedLetters);
-        /*if(wordHasBeenGuessed()){
-            wins++
-            document.getElementById('wins-count').textContent = wins;
-           startGame();
+    return underScore;
+};
+
+function setEventListeners(){
+    //get user guess
+    document.onkeyup = function(e){
+        //if users guess is right
+        if(currentWord.indexOf(e.key) > -1){
+            //push to rightWord Array
+            rightWord.push(e.key);
+            //replace underscore with right letter
+            underScore[currentWord.indexOf(e.key)] = e.key;
+            docUnderScore[0].innerHTML = underScore.join(' ');
+            //when all underscores have been filled, alert YOU WIN and increase wins by 1
+            if(underScore.join('') ==  currentWord){
+                wins++;
+                winAlert();
+                docWinTracker[0].innerHTML = wins;
+                startGame();
+            }
         }
-        shouldGuessesGoDown(i.key);
-        console.log(currentWord, guessedLetters, guessesLeft);
-        updateDom();
-        checkIfUserLost();//create underscores based on length of word
-//Get user's letter guess
-//check if the guess is right or wrong
-//if right, push to right array
-//if wrong, push to wrong array
+        //if users guess is wrong push to wrongWord array
+        else{
+            wrongWord.push(e.key);
+            docWrongGuess[0].innerHTML = wrongWord;
+            guessesRemaining = guessesRemaining -1;
+            docRemainingGuess[0].innerHTML = guessesRemaining;
+        }
     }
-}*/
+};
+
+function checkIfUserLost(){
+    if(guessesRemaining <= 0){
+      alert('You LOSE!')
+    }
+};
+
+function winAlert(){
+    alert("You WIN!");
+};
+
+
+docUnderScore[0].innerHTML = generateUnderScore().join(' ');
